@@ -4,7 +4,7 @@ class CreateSymptoms < ActiveRecord::Migration[5.0]
       t.belongs_to :condition, index:true
       t.string :location
       t.integer :painlevel
-      t.string :type
+      t.string :type1
       t.string :comment
       t.timestamps
     end
