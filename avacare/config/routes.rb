@@ -1,3 +1,6 @@
 Rails.application.routes.draw do
-  # For details on the DSL available within this file, see http://guides.rubyonrails.org/routing.html
+  get 'users/:id/createCondition', to: 'conditions#new'
+  get 'createUser', to: 'users#new'
+  get 'users/:id', to: 'users#show'
+  get 'users/:id/conditions', to: 'conditions#show'
 end
