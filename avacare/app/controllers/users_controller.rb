@@ -1,12 +1,14 @@
+require 'net/http'
+require 'uri'
+require 'json'
 class UsersController < ApplicationController
   skip_before_action :verify_authenticity_token
   include SymptomsHelper
+  include UsersHelper
 
   def create
-    p "username:"
-    p params.require(:username)
-    @user = User.new(username: params[:username], password: params[:password])
-    
+    @user = User.new(username: params[:username], secret: params[:secret])
+
     if(@user.save!)
       render json: @user.id
     else
@@ -21,22 +23,22 @@ class UsersController < ApplicationController
   end
 
   def login
-    # ActionController::Parameters.permit_all_parameters = true
-
     @user = User.find_by(username: params[:username])
-    # puts @user.password
-    # # p "params: "
-    # # p params[:password]
-    # puts params
-    # p "comparison:"
-    # p @user.password == params[:password]
-    puts params[:password]
-    puts @user.password
-    puts @user.password == params[:password]
-    if(@user.password ==  params[:password])
-      render json: @user.id
+    if @user
+      if(@user.secret ==  params[:secret])
+        render json: @user.id
+      else
+        render json: 0
+      end
     else
       render json: 0
     end
+  end
+
+  def doctor
+    @response = doctors_in_type("5b33aa692c9dd2435562635a")
+    @response2 = closest_doctor(params[:lng], params[:lat], @response)
+    puts @response2
+    render json: @response2
   end
 end

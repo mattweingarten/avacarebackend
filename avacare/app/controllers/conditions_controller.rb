@@ -6,5 +6,12 @@ class ConditionsController < ApplicationController
                                    user_id: params[:id])
     @condition.save!
     render json:@condition.symptoms
-    end
+  end
+
+  def index
+    @conditions = Condition.where(user_id: params[:id])
+    @conditions.map do |condition|
+      condition.symptoms
+  end
+  render json: @conditions
 end
