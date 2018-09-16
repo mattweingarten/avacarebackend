@@ -35,16 +35,16 @@ module UsersHelper
     bruise = false
     burn = false
     symptoms.each do |symptom|
-      if(symptom.type1 = "rash")
+      if(symptom.type1 == "rash")
         rash = true
       end
-      if(symptom.type1 = "bruise")
+      if(symptom.type1 == "bruise")
         bruise = true
       end
-      if(symptom.type1 = "burn")
+      if(symptom.type1 == "burn")
         burn = true
       end
-      if symptom.painlevel > max_pain
+      if( symptom.painlevel && symptom.painlevel > max_pain)
         max_pain = symptom.painlevel
         area_of_max_pain = symptom.location
       end
@@ -55,7 +55,7 @@ module UsersHelper
     # if(max_pain > 5 && bruise)
     # end
 
-    if(max_pain == 10 || fever >= 40.0)
+    if(max_pain == 10 || (fever && fever >= 40.0))
       result =  "5b33aa692c9dd243556263b8"
     end
     # if(accident && max_pain >= 5)
@@ -63,20 +63,19 @@ module UsersHelper
     # end
     if(accident && max_pain < 5)
       result = "5b33a6142c9dd2435562632d"
-    end
-    if(!accident && rash  && max_pain > 5)
+    elsif(!accident && rash  && max_pain > 5)
       result = "5b33aa692c9dd24355626396"
-    end
-    if(!accident && rash  && max_pain < 5)
+
+    elsif(!accident && rash  && max_pain < 5)
       result = "5b33aa692c9dd2435562637"
-    end
-    if(!accident && bruise && max_pain > 5)
+
+    elsif(!accident && bruise && max_pain > 5)
       result = "5b33a6142c9dd2435562632d"
-    end
-    if(!burn  && max_pain > 3)
-      result =  "5b33a6142c9dd24355626326"
-    end
-    if(area_of_max_pain == "stomach")
+
+    elsif(burn  && max_pain > 3)
+      result =  "5b33a6142c9dd24355626345s"
+
+    elsif(area_of_max_pain == "stomach")
       result = "5b33aa692c9dd243556263ae"
     else
       result = "5b33a6142c9dd2435562633b"
@@ -101,16 +100,6 @@ module UsersHelper
       http.request(request)
     end
     res =  JSON.parse(response.body)
-    puts "-----------------------------------------------------------"
-    puts "-----------------------------------------------------------"
-    puts "-----------------------------------------------------------"
-    # puts response.body
-
-    puts "-----------------------------------------------------------"
-    puts "-----------------------------------------------------------"
-
-
-    # puts res['result']
     res['result']
   end
 
@@ -136,4 +125,5 @@ def sendSMS(doctor)
     http.request(request)
   end
  end
+
 end
