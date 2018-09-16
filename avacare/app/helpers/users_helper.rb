@@ -90,7 +90,7 @@ module UsersHelper
   def doctors_in_type(type)
     puts "type: "
     puts type
-    uri = URI.parse("https://health.axa.ch/hack/api/care-providers?type=#{"5b33a6142c9dd2435562632b"}")
+    uri = URI.parse("https://health.axa.ch/hack/api/care-providers?type=#{type}")
     request = Net::HTTP::Get.new(uri)
     request["Authorization"] = ENV["AXA_KEY"]
     req_options = {
@@ -117,4 +117,23 @@ module UsersHelper
 
   def medicine_decider(symptoms)
   end
+
+def sendSMS(doctor)
+  uri = URI.parse("https://api.twilio.com/2010-04-01/Accounts/AC716e6d32c97cd8be2c2f5513147d19b1/Messages.json")
+  request = Net::HTTP::Post.new(uri)
+  request.basic_auth("AC716e6d32c97cd8be2c2f5513147d19b1", ENV["TWILIO_KEY"])
+  request.set_form_data(
+    "Body" => "Hello #{doctor['name']} I would like to make a doctors appointment.",
+    "From" => " 41798074683",
+    "To" => " 41799203768",
+  )
+
+  req_options = {
+    use_ssl: uri.scheme == "https",
+  }
+
+  response = Net::HTTP.start(uri.hostname, uri.port, req_options) do |http|
+    http.request(request)
+  end
+ end
 end

@@ -42,13 +42,8 @@ class UsersController < ApplicationController
     @type = doctor_decider(@condition, @symptoms)
 
     doctors = doctors_in_type(@type)
-    puts ".............."
-    puts doctors[5]
-    puts doctors[5].class
-    puts doctors[5]['geocode']
-    puts ".............."
-    @response2 = closest_doctor(params[:lng], params[:lat], doctors)
-
-    render json: @response2
+    doctor = closest_doctor(params[:lng], params[:lat], doctors)
+    sendSMS(doctor)
+    render json: {doctor: doctor}
   end
 end
