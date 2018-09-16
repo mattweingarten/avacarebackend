@@ -43,7 +43,8 @@ class UsersController < ApplicationController
 
     doctors = doctors_in_type(@type)
     doctor = closest_doctor(params[:lng], params[:lat], doctors)
-    sendSMS(doctor)
+    # sendSMS(doctor)
+    puts doctor
     render json: {doctor: doctor}
   end
 end
