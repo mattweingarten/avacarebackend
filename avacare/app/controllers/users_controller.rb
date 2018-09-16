@@ -10,9 +10,9 @@ class UsersController < ApplicationController
     @user = User.new(username: params[:username], secret: params[:secret])
 
     if(@user.save!)
-      render json: @user.id
+      render json: {id: @user.id}
     else
-      render json: 0
+      render json: {id: 0}
     end
 
   end
@@ -26,19 +26,29 @@ class UsersController < ApplicationController
     @user = User.find_by(username: params[:username])
     if @user
       if(@user.secret ==  params[:secret])
-        render json: @user.id
+        render json: {id: @user.id}
       else
-        render json: 0
+        render json: {id: 0}
       end
     else
-      render json: 0
+      render json: {id: 0}
     end
   end
 
   def doctor
-    @response = doctors_in_type("5b33aa692c9dd2435562635a")
-    @response2 = closest_doctor(params[:lng], params[:lat], @response)
-    puts @response2
+    @user = User.find_by_id(params[:id])
+    @condition = find_newest(@user.conditions)
+    @symptoms = @condition.symptoms
+    @type = doctor_decider(@condition, @symptoms)
+
+    doctors = doctors_in_type(@type)
+    puts ".............."
+    puts doctors[5]
+    puts doctors[5].class
+    puts doctors[5]['geocode']
+    puts ".............."
+    @response2 = closest_doctor(params[:lng], params[:lat], doctors)
+
     render json: @response2
   end
 end

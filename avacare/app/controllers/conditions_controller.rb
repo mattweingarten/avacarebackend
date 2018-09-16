@@ -13,5 +13,5 @@ class ConditionsController < ApplicationController
     @conditions.map do |condition|
       condition.symptoms
   end
-  render json: @conditions
+  render json:{symptoms: @conditions }
 end

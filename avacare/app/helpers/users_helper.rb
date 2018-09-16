@@ -2,31 +2,95 @@ module UsersHelper
 
 
   def closest_doctor(lng, lat, doctors)
-    c = 0
-    lng = lng.to_i
-    lat = lat.to_i
-    min  = (lng - (doctors[0]['geocode']['location']['lng'].to_i)).abs +
-    (lat - (doctors[0]['geocode']['location']['lat'].to_i))
-    min_doctor = doctors[0]
-    doctors.each do |doctor|
-      puts "stuck here!"
-      c += 1
-      distance = (lng - doctor['geocode']['location']['lng'].to_i).abs +
-      (lat - doctor['geocode']['location']['lat'].to_i)
-      if (distance < min)
-        min = distance
-        min_doctor = doctor
+    c = 5
+    lng = lng.to_f
+    lat = lat.to_f
+
+    min  = (lng - (doctors[5]['geocode']['location']['lng'].to_f)).abs +
+    (lat - (doctors[5]['geocode']['location']['lat'].to_f)).abs
+    min_doctor = doctors[5]
+    while (c < 10 && c < doctors.length)
+      doctor = doctors[c]
+      if(doctor)
+        distance = (lng - doctor['geocode']['location']['lng'].to_f).abs +
+        (lat - doctor['geocode']['location']['lat'].to_f).abs
+        if (distance < min)
+          min = distance
+          min_doctor = doctor
+        end
+        c +=1
       end
     end
-    doctor
+    min_doctor
   end
 
-  def doctor_decider(symptoms)
+  def doctor_decider(condition,symptoms)
+    result = ""
+    accident = condition.accident
+    fever = condition.fever
 
+    max_pain = 0
+    area_of_max_pain = ""
+    rash = false
+    bruise = false
+    burn = false
+    symptoms.each do |symptom|
+      if(symptom.type1 = "rash")
+        rash = true
+      end
+      if(symptom.type1 = "bruise")
+        bruise = true
+      end
+      if(symptom.type1 = "burn")
+        burn = true
+      end
+      if symptom.painlevel > max_pain
+        max_pain = symptom.painlevel
+        area_of_max_pain = symptom.location
+      end
+
+    end
+    # if(max_pain > 5 && rash)
+    # end
+    # if(max_pain > 5 && bruise)
+    # end
+
+    if(max_pain == 10 || fever >= 40.0)
+      result =  "5b33aa692c9dd243556263b8"
+    end
+    # if(accident && max_pain >= 5)
+    #   result = "5b33a6142c9dd24355626324"
+    # end
+    if(accident && max_pain < 5)
+      result = "5b33a6142c9dd2435562632d"
+    end
+    if(!accident && rash  && max_pain > 5)
+      result = "5b33aa692c9dd24355626396"
+    end
+    if(!accident && rash  && max_pain < 5)
+      result = "5b33aa692c9dd2435562637"
+    end
+    if(!accident && bruise && max_pain > 5)
+      result = "5b33a6142c9dd2435562632d"
+    end
+    if(!burn  && max_pain > 3)
+      result =  "5b33a6142c9dd24355626326"
+    end
+    if(area_of_max_pain == "stomach")
+      result = "5b33aa692c9dd243556263ae"
+    else
+      result = "5b33a6142c9dd2435562633b"
+    end
+
+    puts "result:"
+    puts result
+    result
   end
 
   def doctors_in_type(type)
-    uri = URI.parse("https://health.axa.ch/hack/api/care-providers?type=#{type}")
+    puts "type: "
+    puts type
+    uri = URI.parse("https://health.axa.ch/hack/api/care-providers?type=#{"5b33a6142c9dd2435562632b"}")
     request = Net::HTTP::Get.new(uri)
     request["Authorization"] = ENV["AXA_KEY"]
     req_options = {
@@ -36,8 +100,18 @@ module UsersHelper
     response = Net::HTTP.start(uri.hostname, uri.port, req_options) do |http|
       http.request(request)
     end
-    result =  JSON.parse(response.body)
-    result['result']
+    res =  JSON.parse(response.body)
+    puts "-----------------------------------------------------------"
+    puts "-----------------------------------------------------------"
+    puts "-----------------------------------------------------------"
+    # puts response.body
+
+    puts "-----------------------------------------------------------"
+    puts "-----------------------------------------------------------"
+
+
+    # puts res['result']
+    res['result']
   end
 
 
